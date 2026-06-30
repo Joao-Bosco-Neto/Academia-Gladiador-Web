@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login", "/auth/cadastro").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                         // Arquivos estáticos (HTML, CSS, JS)
-                        .requestMatchers("/*.html", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/", "/*.html", "/css/**", "/js/**").permitAll()
                         // Endpoint para aluno consultar seus próprios dados
                         .requestMatchers("/alunos/me").authenticated()
                         // Demais endpoints /alunos/** - apenas admin

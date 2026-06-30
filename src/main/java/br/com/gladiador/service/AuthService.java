@@ -111,7 +111,7 @@ public class AuthService {
         Aluno aluno = new Aluno();
         aluno.setUsuario(usuario);
         aluno.setNome(dto.getNome());
-        aluno.setSexo(dto.getSexo());
+        aluno.setSexo(converterSexo(dto.getSexo()));
         aluno.setIdade(dto.getIdade());
         aluno.setCpf(dto.getCpf());
         aluno.setPeso(dto.getPeso());
@@ -158,6 +158,17 @@ public class AuthService {
             case "Mensal" -> dataInicio.plusMonths(1);
             case "Diária" -> dataInicio.plusDays(1);
             default -> dataInicio.plusMonths(1);
+        };
+    }
+
+    /**
+     * Converte o código de sexo (M/F) para o formato extenso do banco (Masculino/Feminino)
+     */
+    private String converterSexo(String sexoCodigo) {
+        return switch (sexoCodigo) {
+            case "M" -> "Masculino";
+            case "F" -> "Feminino";
+            default -> sexoCodigo;
         };
     }
 }
