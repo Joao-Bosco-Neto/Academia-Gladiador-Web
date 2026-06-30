@@ -37,7 +37,11 @@ public class SecurityConfig {
                         // Endpoints públicos
                         .requestMatchers("/auth/login", "/auth/cadastro").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
-                        // Endpoints protegidos - apenas admin
+                        // Arquivos estáticos (HTML, CSS, JS)
+                        .requestMatchers("/*.html", "/css/**", "/js/**").permitAll()
+                        // Endpoint para aluno consultar seus próprios dados
+                        .requestMatchers("/alunos/me").authenticated()
+                        // Demais endpoints /alunos/** - apenas admin
                         .requestMatchers("/alunos/**").hasRole("ADMIN")
                         // Qualquer outra requisição requer autenticação
                         .anyRequest().authenticated()

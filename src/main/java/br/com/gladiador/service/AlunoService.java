@@ -70,6 +70,21 @@ public class AlunoService {
     }
 
     /**
+     * Busca um aluno por email do usuário (para o próprio aluno consultar seus dados)
+     */
+    public AlunoDTO buscarPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Aluno aluno = alunoRepository.findAll().stream()
+                .filter(a -> a.getUsuario().getId().equals(usuario.getId()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+
+        return convertToDTO(aluno);
+    }
+
+    /**
      * Atualiza os dados de um aluno
      */
     @Transactional

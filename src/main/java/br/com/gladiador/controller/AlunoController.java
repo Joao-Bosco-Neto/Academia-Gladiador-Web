@@ -1,5 +1,6 @@
 package br.com.gladiador.controller;
 
+import br.com.gladiador.config.JwtUtil;
 import br.com.gladiador.dto.AlunoDTO;
 import br.com.gladiador.dto.CadastroDTO;
 import br.com.gladiador.service.AlunoService;
@@ -27,9 +28,11 @@ import java.util.Map;
 public class AlunoController {
 
     private final AlunoService alunoService;
+    private final JwtUtil jwtUtil;
 
-    public AlunoController(AlunoService alunoService) {
+    public AlunoController(AlunoService alunoService, JwtUtil jwtUtil) {
         this.alunoService = alunoService;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping
@@ -40,6 +43,26 @@ public class AlunoController {
     })
     public ResponseEntity<List<AlunoDTO>> listarTodos() {
         return ResponseEntity.ok(alunoService.listarTodos());
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "Busca dados do próprio aluno", description = "Retorna os dados do aluno autenticado (liberado para qualquer usuário autenticado)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Aluno encontrado"),
+            @ApiResponse(responseCode = "404", description = "Aluno não encontrado"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado")
+    })
+    public ResponseEntity<?> buscarDadosProprioAluno(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7); // Remove "Bearer "
+            String email = jwtUtil.extractEmail(token);
+            AlunoDTO aluno = alunoService.buscarPorEmail(email);
+            return ResponseEntity.ok(aluno);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("erro", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
     }
 
     @GetMapping("/{id}")
