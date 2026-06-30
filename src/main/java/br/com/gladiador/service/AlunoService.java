@@ -1,7 +1,7 @@
 package br.com.gladiador.service;
 
 import br.com.gladiador.dto.AlunoDTO;
-import br.com.gladiador.dto.CadastroDTO;
+import br.com.gladiador.dto.AtualizarAlunoDTO;
 import br.com.gladiador.model.Aluno;
 import br.com.gladiador.model.Matricula;
 import br.com.gladiador.model.Plano;
@@ -88,7 +88,7 @@ public class AlunoService {
      * Atualiza os dados de um aluno
      */
     @Transactional
-    public void atualizar(Integer id, CadastroDTO dto) {
+    public void atualizar(Integer id, AtualizarAlunoDTO dto) {
         Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
 
@@ -114,7 +114,8 @@ public class AlunoService {
 
         // Atualizar usuário
         usuario.setEmail(dto.getEmail());
-        if (dto.getSenha() != null && !dto.getSenha().isEmpty()) {
+        // Atualizar senha somente se foi fornecida (não vazia/nula)
+        if (dto.getSenha() != null && !dto.getSenha().trim().isEmpty()) {
             usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
         }
         usuarioRepository.save(usuario);

@@ -2,7 +2,7 @@ package br.com.gladiador.controller;
 
 import br.com.gladiador.config.JwtUtil;
 import br.com.gladiador.dto.AlunoDTO;
-import br.com.gladiador.dto.CadastroDTO;
+import br.com.gladiador.dto.AtualizarAlunoDTO;
 import br.com.gladiador.service.AlunoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -94,14 +94,14 @@ public class AlunoController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualiza dados de um aluno", description = "Atualiza as informações cadastrais de um aluno")
+    @Operation(summary = "Atualiza dados de um aluno", description = "Atualiza as informações cadastrais de um aluno. Senha é opcional - se vazia, mantém a atual.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Aluno atualizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "404", description = "Aluno não encontrado"),
             @ApiResponse(responseCode = "401", description = "Não autenticado")
     })
-    public ResponseEntity<?> atualizar(@PathVariable Integer id, @Valid @RequestBody CadastroDTO dto) {
+    public ResponseEntity<?> atualizar(@PathVariable Integer id, @Valid @RequestBody AtualizarAlunoDTO dto) {
         try {
             alunoService.atualizar(id, dto);
             Map<String, String> response = new HashMap<>();
