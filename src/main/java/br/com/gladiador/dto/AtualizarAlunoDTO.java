@@ -37,8 +37,8 @@ public class AtualizarAlunoDTO {
     @Pattern(regexp = "\\d{11}", message = "CPF deve conter 11 dígitos")
     private String cpf;
 
-    // Senha é opcional na atualização - se vazia, mantém a atual
-    @Size(min = 6, message = "Senha deve ter no mínimo 6 caracteres")
+    // Senha é opcional na atualização - se vazia ou null, mantém a atual
+    // Validação: permite vazia (min = 0) mas se fornecida, lógica de negócio valida tamanho mínimo
     private String senha;
 
     @NotBlank(message = "Plano é obrigatório")

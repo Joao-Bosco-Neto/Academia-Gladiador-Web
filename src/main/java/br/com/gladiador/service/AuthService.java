@@ -12,6 +12,8 @@ import br.com.gladiador.repository.AlunoRepository;
 import br.com.gladiador.repository.MatriculaRepository;
 import br.com.gladiador.repository.PlanoRepository;
 import br.com.gladiador.repository.UsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 @Service
 public class AuthService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final UsuarioRepository usuarioRepository;
     private final AlunoRepository alunoRepository;
     private final PlanoRepository planoRepository;
@@ -48,10 +51,23 @@ public class AuthService {
      * Realiza o login do usuário
      */
     public LoginResponseDTO login(LoginDTO dto) {
-        Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Email ou senha inválidos"));
+        logger.info("=== Tentativa de login: email={} ===", dto.getEmail());
 
-        if (!passwordEncoder.matches(dto.getSenha(), usuario.getSenha())) {
+        Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> {
+                    logger.warn("Usuário não encontrado: {}", dto.getEmail());
+                    return new RuntimeException("Email ou senha inválidos");
+                });
+
+        logger.info("Usuário encontrado: id={}, tipo={}", usuario.getId(), usuario.getTipoUsuario());
+        logger.info("Hash do banco: {}", usuario.getSenha().substring(0, Math.min(30, usuario.getSenha().length())));
+        logger.info("Senha fornecida: {}", dto.getSenha());
+
+        boolean senhaValida = passwordEncoder.matches(dto.getSenha(), usuario.getSenha());
+        logger.info("Senha válida? {}", senhaValida);
+
+        if (!senhaValida) {
+            logger.warn("Senha inválida para usuário: {}", dto.getEmail());
             throw new RuntimeException("Email ou senha inválidos");
         }
 
